@@ -1,34 +1,16 @@
-struct PublicParams(u64);
-struct Func(fn u64 -> u64);
-struct ProveKey(u64);
-struct VerifyKey(u64);
-struct MerkleTree {
-	root: u64
-}
-struct BlockHash(u64);
-struct Block {
-	parent_block_hash: BlockHash,
-	txn_merkle_root: MerkleTree.root,
-	epoch: u64
-}
-struct BlockAddr(u64);
-struct RepScore(u64);
-struct Output(BlockHash, BlockHash, BlockAddr, RepScore);
-struct Txn {
-	sender: BlockAddr,
-	receiver: BlockAddr,
-	amount: u64
-}
-struct Proof(u64);
-struct TxnWitness {
-	txn: Txn,
-	path: Proof
-}
-struct Witness(Vec<Block>, Vec<TxnWitness>);
+pub trait IVC {
+	type SecurityParam;
+	type PublicParams;
+	type Func;
+	type ProveKey;
+	type VerifyKey;
+	type Index;
+	type Output;
+	type Witness;
+	type Proof;
 
-trait IVC {
-	fn generate(u64) -> PublicParams;
-	fn encode(PublicParams, Func) -> (ProveKey, VerifyKey);
-	fn prove(ProveKey, (u64, Output, Output), Witness, Proof) -> Proof;
-	fn verify(VerifyKey, (u64, Output, Output), Proof) -> bool;
+	fn generate(lambda : Self::SecurityParam) -> Self::PublicParams;
+	fn encode(pp : Self::PublicParams, func : Self::Func) -> (Self::ProveKey, Self::VerifyKey);
+	fn prove(pk : Self::ProveKey, i : Self::Index, z_0 : Self::Output, z_i : Self::Output, omega : Self::Witness, pi_i : Self::Proof) -> Self::Proof;
+	fn verify(vk : Self::VerifyKey, i : Self::Index, z_0 : Self::Output, z_i : Self::Output, pi_i : Self::Proof) -> bool;
 }
