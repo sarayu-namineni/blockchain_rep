@@ -1,4 +1,4 @@
-use crate::IVC::IVC;
+use crate::ivc::IVC::IVC;
 
 struct DummyIVCImpl;
 
